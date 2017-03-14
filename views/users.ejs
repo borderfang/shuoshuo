@@ -1,0 +1,18 @@
+	<% include header.ejs %>
+		<div class="container">
+			<div class="user-header">
+				<img class="per-img" src="/avatar/<%=perimg[0].avatar %>">
+				<span class="user-p"><%=username %>个人主页</span>
+			</div>
+			<div class="user-content">
+				<% for( var i = 0; i < shuoshuolists.length; i ++ ){ %>
+					<div class="user-con-block">
+						<p class="user-msg"><%=shuoshuolists[i].message %></p>
+						<span> <%=shuoshuolists[i].datetime %> </span>
+					</div>
+				<% } %>
+			</div>
+		</div>
+		
+	</body>
+</html>

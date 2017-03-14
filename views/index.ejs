@@ -1,0 +1,161 @@
+<% include header.ejs %>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">        
+        <% if(login){ %>
+          <h1>
+            
+            <div class="row">
+              <div class="col-lg-1 col-md-6 col-sm-12 col-xs-12">
+                <a href="/showavatar"><% if(avatar){ %><img class="per-img" src="/avatar/<%= avatar %>"> <%}else{%> <img src="/avatar/default.jpg"> <%}%> </a>
+                <p class="per-title font2"><%=username %></p>
+              </div>
+              <div class="col-lg-offset-1 col-md-6 col-sm-12 col-xs-12">
+                <p class="font2">我要发表：</p>
+                <textarea class="fb-send" id="messagesend"></textarea>
+                <button type="button" id="fbbtn" class="btn btn-success f-btn">发表说说</button>
+              </div>
+            </div>
+          </h1>
+        <%}else{%>
+          <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+              <h1>欢迎您</h1>
+              <p>班级说说是我们大家学习交流的场所，欢迎大家多多发言！</p>
+              <a href="/regist"><button>去注册</button></a>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+              <form class="l-right">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">用户名</label>
+                  <input type="text" class="form-control" id="username" placeholder="用户名可以为字母、数字、汉字等">
+                  <p class="warm-text" id="pname"></p>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">密码</label>
+                  <input type="password" class="form-control" id="password" placeholder="密码为6至11位字母、数字">
+                  <p class="warm-text" id="pword"></p>
+                </div>
+                <button type="button" class="btn btn-default" id="subbtn">登录</button>
+              </form>
+            </div>
+          </div>
+          
+        <%}%>
+      </div>
+    </div>
+    <div class="container">
+      <nav aria-label="Page navigation">
+          <ul id="pagelist" class="pagination">
+          </ul>
+      </nav>
+    </div>
+    <div class="container">
+      <!-- Example row of columns -->
+        <% if(login){ %>
+          <div id="membermsg" class="row"></div>
+        <% }else{ %>
+          <p>登录后可以查看说说记录</p>
+        <% } %>
+      <hr>
+
+      <footer>
+        <p>&copy; 2016 Company, Inc.</p>
+      </footer>
+    </div> <!-- /container -->
+    <div class="alert alert-danger" id="danger-block" role="alert"></div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/yanzheng.js"></script>
+    <script>
+      $( function() {
+      //发表说说；
+        $("#fbbtn").click( function() {
+          $.post("/domessage", {
+            "messages": $("#messagesend").val() 
+          }, function(data) {
+            if( data == "-3" ){
+              alert("发表失败，服务器错误，请稍后重试");
+            }
+            $("#messagesend").val("");
+            $("#danger-block").slideDown( function() {
+              $(this).html("发表成功");
+              setTimeout( function() {
+                $("#danger-block").slideUp();
+                window.location.href = "/";
+              }, 1000);
+            })
+          })
+        });
+
+       
+        
+      }) 
+      //获取用户说说列表；
+ /*   $.ajax({
+        type: "GET",
+        url: "/getallmessage?page=0",
+        async: false,
+        success: function(data1) {
+          for (var i = 0; i < data1.length; i ++){
+            var html = "1";     
+            $.ajax({
+              type: "GeT",
+              url: "/getallavatar?username=" + data1[i].username,
+              async: false,
+              success: function(data2) {
+                html = '<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3"><a href="/avatar/' + data1[i].username + '"> <div> <img class="per-list-img" src="/avatar/' + data2.avatar + '"> <span>' + data1[i].username + '</span></div><p>' + data1[i].message + '</p> <p><a class="btn btn-default" href="#" role="button">查看详情 &raquo;</a></p></a></div>';
+              },
+              dataType: "json"
+            })
+            $("#membermsg").append(html);
+          }
+          
+        },
+        dataType: "json"
+      })
+  */ 
+        getPage(0);
+        //分页
+        function getPage(page) {
+          //获取member表中的用户头像，以及获取membermsg表中的用户信息（留言）
+        　$.get("/getallmessage?page=" + page, function(data) {          
+            iterator(0);
+            function iterator(i) {
+             if( i == data.length ) {              
+                return;
+              }
+              $.get("/getallavatar?username=" + data[i].username, function(data2) {
+                data[i].avatar = data2.avatar; //这里巧妙的把第一个表中的数据avatar，通过前台的传递显示出来，避免使用同步请求带的不好体验
+                var html = '<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3"><a class="t-p" href="/user/' + data[i].username + '"> <div> <img class="per-list-img" src="/avatar/' + data[i].avatar + '"> <span>' + data[i].username + '</span></div><p>' + data[i].message + '</p> <p><a class="btn btn-default" href="#" role="button">查看详情 &raquo;</a></p></a></div>';
+                $("#membermsg").append(html);          
+                iterator(i + 1);
+              })
+            }
+          })
+        }
+
+        //分页条
+        $.ajax({
+          url: "/getallcounts",
+          type: "GET",
+          "success": function(data) {
+            var amount = parseInt(data);
+            var pageamount = Math.ceil(amount / 6);
+            for( var i = 0; i < pageamount; i ++ ) {
+              var html = '<li class="pageli" data-count='+ i +'><a>'+ (i + 1) +'</a></li>';
+              $("#pagelist").append(html);   
+            } 
+            $(".pageli").click( function() {
+                $("#membermsg").html(""); 
+                var count = $(this).data("count");
+                getPage(count);
+            })
+          } 
+        })
+    </script> 
+  </body>
+</html>
+

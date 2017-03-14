@@ -1,0 +1,111 @@
+<% include header.ejs %>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      
+    </div>
+
+    <div class="container">
+      <form>
+        <div class="form-group">
+          <label for="exampleInputEmail1">用户名</label>
+          <input type="text" class="form-control" id="username" placeholder="用户名可以为字母、数字、汉字等">
+          <p class="warm-text" id="pname"></p>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">密码</label>
+          <input type="password" class="form-control" id="password" placeholder="密码为6至11位字母、数字">
+          <p class="warm-text" id="pword"></p>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox"> 同意本服务条款
+          </label>
+        </div>
+        <button type="button" class="btn btn-default" id="subbtn">注册</button>
+      </form>
+    </div>
+    <hr>
+    <!-- <footer>
+      <p>&copy; 2016 尧都区一平垣乡房家凹村, Inc.</p>
+    </footer> -->
+    </div> <!-- /container -->
+    <div class="alert alert-danger" id="danger-block" role="alert"></div>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      
+      $( function() {
+        // // //验证用户名;
+        $("#username").blur( function() {
+          $("#pname").html("");
+          var reg = /^([A-Za-z]|[\u4E00-\u9FA5])+$/;
+          regUsername = reg.test($(this).val());
+          if( !regUsername ){
+             $("#pname").html("*用户名必须为字母或者汉字");
+          }
+        })
+        //验证密码；
+        $("#password").blur( function() {
+          $("#pword").html("");
+          var reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;
+          regPassword = reg.test($(this).val());
+          if( !regPassword ){
+            $("#pword").html("*密码必须是6至11位字母、数字或者下划线");
+          } 
+        })
+
+        //使用ajax的POST方法提交表单；
+        $("#subbtn").click( function() {
+          var reg1 = /^([A-Za-z]|[\u4E00-\u9FA5])+$/;
+          var reg2 = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;
+          regUsername = reg1.test($("#username").val());
+          regPassword = reg2.test($("#password").val());
+          if( regUsername && regPassword ){
+            $.post("/doregist", {
+              "username": $("#username").val(),
+              "password": $("#password").val()
+            }, function(data) {
+              if( data == "-2" ){
+                //服务器错误；
+                $("#danger-block").slideDown( function() {
+                  $(this).html("服务器错误，请稍后重试");
+                  setTimeout( function(){
+                    $("#danger-block").slideUp();
+                  }, 1000)
+                });
+              }else if( data == "-1" ){
+               //该用户已经注册，请直接登录；
+               $("#danger-block").slideDown( function() {
+                  $(this).html("该用户已经注册，请直接登录");
+                  setTimeout( function(){
+                    $("#danger-block").slideUp();
+                  }, 1000)
+                });
+              }else if( data == "-3" ){
+                //注册失败；
+               $("#danger-block").slideDown( function() {
+                  $(this).html("注册失败");
+                  setTimeout( function(){
+                    $("#danger-block").slideUp();
+                  }, 1000)
+                });
+              }else{
+                alert("恭喜您，注册成功。即将跳转首页");
+                window.location.href = "/";
+              }
+            })
+
+          }else{
+            alert("用户名或密码格式不正确");
+          }
+        })
+        
+
+
+
+      })
+    </script>
+  </body>
+</html>
+

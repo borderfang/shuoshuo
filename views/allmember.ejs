@@ -1,0 +1,17 @@
+<% include header.ejs %>
+		<div class="container">
+			<div class="user-header">
+				<span class="user-p">所有成员：</span>
+			</div>
+			<div class="user-content row">
+				<% for( var i = 0; i < memberlists.length; i ++ ){ %>
+					<div class="user-con-block col-lg-1 col-md-6 col-sm-12 col-xs-12">
+						<img class="per-img" src="/avatar/<%=memberlists[i].avatar %>">
+						<p class="member-p"><%=memberlists[i].username %></p>	
+					</div>
+				<% } %>
+			</div>
+		</div>
+		
+	</body>
+</html>
