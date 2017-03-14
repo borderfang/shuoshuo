@@ -25,8 +25,8 @@
         <div id="navbar" class="navbar-collapse collapse">
            <ul class="nav navbar-nav">
               <li <% if(active == "index"){ %> class="active" <% } %> ><a href="/">全部说说 <span class="sr-only">(current)</span></a></li>
-              <li <% if(active == "myshuoshuo"){ %> class="active" <% } %> ><a href="/user/<%=username %>">我的说说</a></li>
-              <li <% if(active == "allmember"){ %> class="active" <% } %> ><a href="/allmember">成员列表</a></li>
+              <li <% if(active == "myshuoshuo"){ %> class="active" <% } %> ><a <% if(login){ %> href="/user/<%=username %>" <%}else{%> href="/" <%}%>>我的说说</a></li>
+              <li <% if(active == "allmember"){ %> class="active" <% } %> ><a <% if(login){ %> href="/allmember" <%}else{%> href="/" <%}%>>成员列表</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
             <% if(login){ %>
